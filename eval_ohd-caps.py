@@ -1,11 +1,13 @@
 import os
 import json
+import argparse
 from math import prod
 
+import spacy
 from PIL import Image
 from tqdm.auto import tqdm
+from loguru import logger
 
-import spacy
 import torch
 from transformers import CLIPProcessor, CLIPModel
 
@@ -17,7 +19,6 @@ def parse_noun(parser, text):
     return [token.text for token in doc if token.pos_ == "NOUN"]
 
 def load_data(file_path, img_base_path):
-    """Load and process annotation data into image-text pairs."""
     data = []
     with open(file_path, "r") as f:
         for line in f:
@@ -34,11 +35,10 @@ def load_data(file_path, img_base_path):
     return data
 
 def evaluate_model(image_text_pairs, model, processor, parser):
-    """Evaluate the model on given image-text pairs."""
     right_vanila = [False] * len(image_text_pairs)
     right_finegrained = [False] * len(image_text_pairs)
 
-    for id, d in enumerate(tqdm(image_text_pairs)):
+    for id, d in enumerate(tqdm(image_text_pairs, dynamic_ncols=True)):
         image = d["image"]
         choices = d["text"]
 
@@ -77,26 +77,25 @@ def evaluate_model(image_text_pairs, model, processor, parser):
 
     return sum(right_vanila) / len(right_vanila), sum(right_finegrained) / len(right_finegrained)
 
-# Load models and parsers
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval().cuda()
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-spacy_parser = spacy.load("en_core_web_sm")
+if __name__ == "__main__":
+    args = argparse.ArgumentParser()
+    args.add_argument("--vision_model_name", type=str, default="openai/clip-vit-base-patch32")
+    args.add_argument("--text_parser", type=str, default="en_core_web_sm")
+    args.add_argument("--coco_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/coco_annotations.json")
+    args.add_argument("--flickr30k_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/flickr_annotations.json")
+    args.add_argument("--nocaps_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/nocaps_annotations.json")
+    args.add_argument("--coco_img_path", type=str, default="/data1/home/ohs/dataset/coco/val2014")
+    args.add_argument("--flickr30k_img_path", type=str, default="/data1/home/ohs/dataset/flickr30k-images")
+    args.add_argument("--nocaps_img_path", type=str, default="/data1/home/ohs/dataset/nocaps_v0.1/validation")
+    args = args.parse_args()
 
-# Load datasets
-coco_path = "/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/coco_annotations.json"
-flickr_path = "/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/flickr_annotations.json"
+    model = CLIPModel.from_pretrained(args.vision_model_name).eval().cuda()
+    processor = CLIPProcessor.from_pretrained(args.vision_model_name)
+    spacy_parser = spacy.load(args.text_parser)
 
-coco_base_path = "/data1/home/ohs/dataset/coco/val2014"
-flickr_base_path = "/data1/home/ohs/dataset/flickr30k-images"
-
-image_text_pairs_coco = load_data(coco_path, coco_base_path)
-image_text_pairs_flickr30k = load_data(flickr_path, flickr_base_path)
-
-# Evaluate datasets
-coco_acc, coco_finegrained_acc = evaluate_model(image_text_pairs_coco, model, processor, spacy_parser)
-print(f"COCO Accuracy: {coco_acc}")
-print(f"COCO Fine-grained Accuracy: {coco_finegrained_acc}")
-
-flickr_acc, flickr_finegrained_acc = evaluate_model(image_text_pairs_flickr30k, model, processor, spacy_parser)
-print(f"Flickr30k Accuracy: {flickr_acc}")
-print(f"Flickr30k Fine-grained Accuracy: {flickr_finegrained_acc}")
+    datasets = ["coco", "flickr30k", "nocaps"]
+    for dataname in datasets:
+        image_text_pairs = load_data(getattr(args, f"{dataname}_path"), getattr(args, f"{dataname}_img_path"))
+        acc, finegrained_acc = evaluate_model(image_text_pairs, model, processor, spacy_parser)
+        logger.info(f"{dataname} Accuracy: {acc*100:.2f}%")
+        logger.info(f"{dataname} Fine-grained Accuracy: {finegrained_acc*100:.2f}%")
