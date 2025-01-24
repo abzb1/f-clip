@@ -1,15 +1,13 @@
-import os
-import json
 import argparse
 from math import prod
 
 import spacy
-from PIL import Image
 from tqdm.auto import tqdm
 from loguru import logger
 
 import torch
 from transformers import CLIPProcessor, CLIPModel
+from datasets import load_dataset
 
 def geo_mean(iterable):
     return prod(iterable) ** (1 / len(iterable))
@@ -18,21 +16,8 @@ def parse_noun(parser, text):
     doc = parser(text)
     return [token.text for token in doc if token.pos_ == "NOUN"]
 
-def load_data(file_path, img_base_path):
-    data = []
-    with open(file_path, "r") as f:
-        for line in f:
-            d = json.loads(line)
-            data_tmp = {}
-
-            img_path = os.path.join(img_base_path, d["file_path"])
-            img = Image.open(img_path)
-            data_tmp["image"] = img
-
-            choices = [d["positive_sample"]] + list(d["adversarial_samples"].values())
-            data_tmp["text"] = choices
-            data.append(data_tmp)
-    return data
+def load_data(dataname):
+    return load_dataset("doolayer/OHD-Caps", dataname)["test"]
 
 def evaluate_model(image_text_pairs, model, processor, parser):
     right_vanila = [False] * len(image_text_pairs)
@@ -40,7 +25,7 @@ def evaluate_model(image_text_pairs, model, processor, parser):
 
     for id, d in enumerate(tqdm(image_text_pairs, dynamic_ncols=True)):
         image = d["image"]
-        choices = d["text"]
+        choices = d["choices"]
 
         # Prepare text inputs with nouns
         choices_with_nouns = [[c] + parse_noun(parser, c) for c in choices]
@@ -81,12 +66,6 @@ if __name__ == "__main__":
     args = argparse.ArgumentParser()
     args.add_argument("--vision_model_name", type=str, default="openai/clip-vit-base-patch32")
     args.add_argument("--text_parser", type=str, default="en_core_web_sm")
-    args.add_argument("--coco_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/coco_annotations.json")
-    args.add_argument("--flickr30k_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/flickr_annotations.json")
-    args.add_argument("--nocaps_path", type=str, default="/data1/home/ohs/workspace/vlmhallu/clip_hallucination/data/OHD-Caps/test/nocaps_annotations.json")
-    args.add_argument("--coco_img_path", type=str, default="/data1/home/ohs/dataset/coco/val2014")
-    args.add_argument("--flickr30k_img_path", type=str, default="/data1/home/ohs/dataset/flickr30k-images")
-    args.add_argument("--nocaps_img_path", type=str, default="/data1/home/ohs/dataset/nocaps_v0.1/validation")
     args = args.parse_args()
 
     model = CLIPModel.from_pretrained(args.vision_model_name).eval().cuda()
@@ -95,7 +74,7 @@ if __name__ == "__main__":
 
     datasets = ["coco", "flickr30k", "nocaps"]
     for dataname in datasets:
-        image_text_pairs = load_data(getattr(args, f"{dataname}_path"), getattr(args, f"{dataname}_img_path"))
+        image_text_pairs = load_data(dataname)
         acc, finegrained_acc = evaluate_model(image_text_pairs, model, processor, spacy_parser)
         logger.info(f"{dataname} Accuracy: {acc*100:.2f}%")
         logger.info(f"{dataname} Fine-grained Accuracy: {finegrained_acc*100:.2f}%")
