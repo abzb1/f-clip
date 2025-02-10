@@ -7,21 +7,20 @@ from datasets import load_dataset
 
 from scorers import ClipScorer, scorers_map
 
-def load_data(dataname):
-    return load_dataset("doolayer/OHD-Caps-out", dataname)["test"]
+def load_data(dataset_name, dataname):
+    return load_dataset(dataset_name, dataname)["test"]
 
 def evaluate_model(image_text_pairs, scorer):
     right = [False] * len(image_text_pairs)
     
     for id, d in enumerate(tqdm(image_text_pairs, dynamic_ncols=True)):
-        if id == 103:
-            continue
         right[id] = scorer.score(d)
 
     return sum(right)/len(right)
 
 if __name__ == "__main__":
     args = argparse.ArgumentParser()
+    args.add_argument("--dataset_name", type=str, default="doolayer/OHD-Caps-out")
     args.add_argument("--vision_model_name", type=str, default="openai/clip-vit-large-patch14")
     args.add_argument("--device", type=str, default="cuda")
     args.add_argument("--text_parser", type=str, default="en_core_web_sm")
@@ -37,6 +36,6 @@ if __name__ == "__main__":
 
     datasets = ["coco", "flickr30k", "nocaps"]
     for dataname in datasets:
-        image_text_pairs = load_data(dataname)
+        image_text_pairs = load_data(args.dataset_name, dataname)
         acc = evaluate_model(image_text_pairs, scorer)
         logger.info(f"{dataname} Accuracy: {acc*100:.2f}%")

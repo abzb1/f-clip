@@ -17,7 +17,7 @@ class ClipScorer:
         choices = image_text_pair["choices"]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image
@@ -49,7 +49,7 @@ class FClipScorerGM:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
@@ -98,7 +98,7 @@ class FClipScorerGMVAR:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
@@ -150,7 +150,7 @@ class FClipScorerGMMIN1:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
@@ -201,7 +201,7 @@ class FClipScorerGMMIN2:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
@@ -254,7 +254,7 @@ class FClipScorerAM:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
@@ -302,7 +302,7 @@ class FClipScorerAMVAR:
         choices_flatten = [item for sublist in choices_with_nouns for item in sublist]
 
         with torch.no_grad():
-            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=choices_flatten, images=image, return_tensors="pt", padding=True, truncation=True)
             inputs = {name: tensor.to(self.device) for name, tensor in inputs.items()}
             outputs = self.clip_model(**inputs)
             logits_per_image = outputs.logits_per_image.squeeze()
