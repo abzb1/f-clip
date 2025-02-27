@@ -70,7 +70,7 @@ if __name__ == "__main__":
     logger.info(f"Evaluating model {scorer}")
     logger.info(f"args: {args}")
 
-    datasets = ["coco", "flickr", "nocaps"]
+    datasets = ["coco"] # flickr30k, nocaps images are not available due to the license, you can download them from the official website
     for dataname in datasets:
         image_text_pairs = load_data(dataname)
         acc = evaluate_model(image_text_pairs, scorer)
