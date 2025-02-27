@@ -1,0 +1,3 @@
+[submodule "clip_hallucination"]
+	path = clip_hallucination
+	url = https://github.com/Yufang-Liu/clip_hallucination.git

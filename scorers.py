@@ -23,7 +23,7 @@ class ClipScorer:
             logits_per_image = outputs.logits_per_image
             probs = logits_per_image.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
         
 class FClipScorerGM:
     def __init__(self, model_args):
@@ -71,7 +71,7 @@ class FClipScorerGM:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
 
 class FClipScorerGMVAR:
     def __init__(self, model_args):
@@ -123,7 +123,7 @@ class FClipScorerGMVAR:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
         
 class FClipScorerGMMIN1:
     def __init__(self, model_args):
@@ -174,7 +174,7 @@ class FClipScorerGMMIN1:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
 
 class FClipScorerGMMIN2:
     def __init__(self, model_args):
@@ -228,7 +228,7 @@ class FClipScorerGMMIN2:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
 
 class FClipScorerAM:
     def __init__(self, model_args):
@@ -275,7 +275,7 @@ class FClipScorerAM:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
         
 class FClipScorerAMVAR:
     def __init__(self, model_args):
@@ -328,7 +328,7 @@ class FClipScorerAMVAR:
             logits_finegrained = torch.tensor(logits_finegrained).unsqueeze(0)
             probs = logits_finegrained.softmax(dim=1)
 
-            return torch.argmax(probs) == choices.index(image_text_pair["label"])
+            return torch.argmax(probs) == image_text_pair["label"]
 
 scorers_map = {
     "clip": ClipScorer,
