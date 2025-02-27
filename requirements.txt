@@ -1,0 +1,9 @@
+pillow==10.4.0
+torch==2.1.2
+torchvision==0.16.2
+transformers==4.37.2
+spacy==3.8.4
+flash-attn==2.7.3
+numpy==1.26.4
+aiohttp==3.11.11
+loguru==0.7.3
