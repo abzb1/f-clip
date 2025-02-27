@@ -1,5 +1,5 @@
-# F-Clipscore
-Finegrained clip score to detect object hallucination
+# F-CLIPScore
+Finegrained CLIPScore to detect object hallucination
 
 This repository contains the source code for the following research paper:
 [Vision-Encoders (Already) Know What They See: Mitigating Object Hallucination via Simple Fine-Grained CLIPScore]()
@@ -13,14 +13,14 @@ python -m spacy download en_core_web_sm
 
 ## Evaluate
 
-For vanila Clipscore
+For vanila CLIPScore
 ```bash
 python eval_ohd-caps.py --score_type clip
 ```
 
-For F-Clipscore
+For F-CLIPScore
 ```bash
 python eval_ohd-caps.py --score_type fclipam
 ```
 
-Further constrained version of F-Clipscore is implemented in [scorers.py](scorers.py)
+Further constrained version of F-CLIPScore is implemented in [scorers.py](scorers.py)
