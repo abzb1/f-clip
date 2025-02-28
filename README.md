@@ -23,4 +23,20 @@ For F-CLIPScore
 python eval_ohd-caps.py --score_type fclipam
 ```
 
-Further constrained version of F-CLIPScore is implemented in [scorers.py](scorers.py)
+cf. Further constrained version of F-CLIPScore is implemented in [scorers.py](scorers.py)
+
+## Result
+![image](https://github.com/user-attachments/assets/15d9258f-8dc6-4d87-9816-d21d1974ca58)
+
+## Citation
+```
+@misc{oh2025visionencodersalreadyknowsee,
+      title={Vision-Encoders (Already) Know What They See: Mitigating Object Hallucination via Simple Fine-Grained CLIPScore}, 
+      author={Hongseok Oh and Wonseok Hwang},
+      year={2025},
+      eprint={2502.20034},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2502.20034}, 
+}
+```
