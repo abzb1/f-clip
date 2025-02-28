@@ -2,7 +2,7 @@
 Finegrained CLIPScore to detect object hallucination
 
 This repository contains the source code for the following research paper:
-[Vision-Encoders (Already) Know What They See: Mitigating Object Hallucination via Simple Fine-Grained CLIPScore]()
+[Vision-Encoders (Already) Know What They See: Mitigating Object Hallucination via Simple Fine-Grained CLIPScore](https://arxiv.org/pdf/2502.20034)
 
 ## Environment setup
 
